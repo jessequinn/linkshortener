@@ -3,6 +3,7 @@ module github.com/jessequinn/linkshortener
 go 1.13
 
 require (
+	github.com/appleboy/gin-jwt/v2 v2.6.3
 	github.com/araddon/gou v0.0.0-20190110011759-c797efecbb61 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/catinello/base62 v0.0.0-20160325105823-e0daaeb631c9

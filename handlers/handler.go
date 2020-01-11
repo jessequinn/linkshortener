@@ -17,6 +17,7 @@ type ShortenedURLResource struct {
 	URL       string    `json:"url" db:"url"`
 	ShortURL  string    `json:"short_url" db:"short_url"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // GetShortUrl returns the url detail
@@ -80,4 +81,34 @@ func RemoveShortUrl(c *gin.Context) {
 	} else {
 		c.String(http.StatusOK, "")
 	}
+}
+
+// UpdateShortUrl returns 200 only
+func UpdateShortUrl(c *gin.Context) {
+	var shortenedURL ShortenedURLResource
+	shortUrl := c.Param("short_url")
+	db := c.MustGet("DB").(*sqlx.DB)
+	if err := c.BindJSON(&shortenedURL); err == nil {
+		tx := db.MustBegin()
+		id, err := ss.Decode(shortUrl)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+		}
+		tx.MustExec("UPDATE url SET url=$1, updated_at=$2 WHERE id=$3", shortenedURL.URL, time.Now().UTC().Format("2006-01-02 15:04:05"), id)
+		err = tx.Commit()
+		if err != nil {
+			log.Println(err)
+			c.String(http.StatusInternalServerError, err.Error())
+		} else {
+			c.String(http.StatusOK, "")
+		}
+	} else {
+		c.String(http.StatusInternalServerError, err.Error())
+	}
+}
+
+func Health(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"serverTime": time.Now().UTC(),
+	})
 }

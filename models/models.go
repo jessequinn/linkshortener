@@ -5,6 +5,7 @@ const UrlSchema = `
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           url VARCHAR(255),
           short_url VARCHAR(255) NULL UNIQUE,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
 `
