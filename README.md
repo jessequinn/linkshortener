@@ -3,6 +3,12 @@ Endpoints
 ```bash
 $ curl -X GET "http://localhost:8000/health" # returns server time and 200 responseCode
 
+$ curl -X POST \
+  http://localhost:8000/v1/urls \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -d '{"url":"http://jessequinn.info"}'
+
 ```
 
 
