@@ -66,3 +66,18 @@ func CreateShortUrl(c *gin.Context) {
 		c.String(http.StatusInternalServerError, err.Error())
 	}
 }
+
+// RemoveShortUrl handles the removing of resource
+func RemoveShortUrl(c *gin.Context) {
+	db := c.MustGet("DB").(*sqlx.DB)
+	shortUrl := c.Param("short_url")
+	tx := db.MustBegin()
+	tx.MustExec("DELETE FROM url WHERE short_url=$1", shortUrl)
+	err := tx.Commit()
+	if err != nil {
+		log.Println(err)
+		c.String(http.StatusInternalServerError, err.Error())
+	} else {
+		c.String(http.StatusOK, "")
+	}
+}

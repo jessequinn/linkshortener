@@ -38,5 +38,6 @@ func main() {
 	//
 	r.GET("/v1/urls/:short_url", hs.GetShortUrl)
 	r.POST("/v1/urls", hs.CreateShortUrl)
+	r.DELETE("/v1/urls/:short_url", hs.RemoveShortUrl)
 	r.Run(":8000") // Listen and serve on 0.0.0.0:8080
 }
