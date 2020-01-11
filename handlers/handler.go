@@ -20,6 +20,16 @@ type ShortenedURLResource struct {
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
+// UserResource holds information about users
+type UserResource struct {
+	ID        int       `json:"id" db:"id"`
+	Username  string    `json:"username" db:"username"`
+	Password  string    `json:"password" db:"password"`
+	Token     string    `json:"token" db:"token"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+}
+
 // GetShortUrl returns the url detail
 func GetShortUrl(c *gin.Context) {
 	var shortenedURL ShortenedURLResource
@@ -107,6 +117,43 @@ func UpdateShortUrl(c *gin.Context) {
 	}
 }
 
+// RegisterUser handles the POST
+func RegisterUser(c *gin.Context) {
+	var userResource UserResource
+	db := c.MustGet("DB").(*sqlx.DB)
+	if err := c.BindJSON(&userResource); err == nil {
+		rows, err := db.NamedQuery(`SELECT * FROM user WHERE username=:username`, userResource)
+		defer rows.Close()
+		if err != nil {
+			log.Println(err)
+			c.String(http.StatusInternalServerError, err.Error())
+		} else {
+			if rows.Next() == false {
+				tx := db.MustBegin()
+				tx.MustExec("INSERT INTO user (username, password) VALUES ($1, $2)", userResource.Username, userResource.Password)
+				err = tx.Commit()
+				if err != nil {
+					log.Println(err)
+					c.String(http.StatusInternalServerError, err.Error())
+				} else {
+					c.JSON(http.StatusOK, gin.H{
+						"code":    http.StatusOK,
+						"message": "User registered",
+					})
+				}
+			} else {
+				c.JSON(http.StatusOK, gin.H{
+					"code":    http.StatusOK,
+					"message": "User already registered",
+				})
+			}
+		}
+	} else {
+		c.String(http.StatusInternalServerError, err.Error())
+	}
+}
+
+// Health check endpoint
 func Health(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"serverTime": time.Now().UTC(),

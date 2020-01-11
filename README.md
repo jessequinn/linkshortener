@@ -4,14 +4,14 @@ Endpoints
 $ curl -X GET "http://localhost:8000/health" # returns server time and 200 responseCode
 
 # login to receive JWT 
-$ curl -X POST \                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  develop  ✭
+$ curl -X POST \                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
   http://localhost:8000/login \       
   -H 'cache-control: no-cache' \
   -H 'content-type: application/json' \
   -d '{"username":"admin", "password":"admin"}'
 
 # refresh token
-$ curl -X GET \                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   develop  ✭
+$ curl -X GET \                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
     http://localhost:8000/auth/refresh_token \
     -H 'cache-control: no-cache' \
     -H 'content-type: application/json' \
@@ -25,9 +25,6 @@ $ curl -X POST \
   -d '{"url":"http://jessequinn.info"}'
 
 ```
-
-
-
 
 Development Dependencies
 

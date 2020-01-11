@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -20,7 +21,7 @@ func Database(con string) gin.HandlerFunc {
 		log.Fatalln(err)
 	}
 	db.MustExec(mdl.UrlSchema)
-
+	db.MustExec(mdl.UserSchema)
 	return func(c *gin.Context) {
 		c.Set("DB", db)
 		c.Next()
@@ -29,9 +30,8 @@ func Database(con string) gin.HandlerFunc {
 
 // JWT
 type User struct {
-	UserName  string
-	FirstName string
-	LastName  string
+	Username string `json:"username" db:"username"`
+	Password string `json:"password" db:"password"`
 }
 
 type login struct {
@@ -60,7 +60,7 @@ func main() {
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*User); ok {
 				return jwt.MapClaims{
-					identityKey: v.UserName,
+					identityKey: v.Username,
 				}
 			}
 			return jwt.MapClaims{}
@@ -68,27 +68,36 @@ func main() {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			return &User{
-				UserName: claims[identityKey].(string),
+				Username: claims[identityKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			var loginVals login
+			var user User
 			if err := c.ShouldBind(&loginVals); err != nil {
 				return "", jwt.ErrMissingLoginValues
 			}
-			userID := loginVals.Username
-			password := loginVals.Password
-			if (userID == "admin" && password == "admin") || (userID == "test" && password == "test") {
-				return &User{
-					UserName:  userID,
-					LastName:  "Bo-Yi",
-					FirstName: "Wu",
-				}, nil
+			user.Username = loginVals.Username
+			user.Password = loginVals.Password
+			db := c.MustGet("DB").(*sqlx.DB)
+			rows, err := db.NamedQuery(`SELECT * FROM user WHERE username=:username AND password=:password`, user)
+			defer rows.Close()
+			if err != nil {
+				log.Println(err)
+				c.String(http.StatusInternalServerError, err.Error())
+			} else {
+				if rows.Next() == false {
+					return nil, jwt.ErrFailedAuthentication
+				} else {
+					return &User{
+						Username: user.Username,
+					}, nil
+				}
 			}
 			return nil, jwt.ErrFailedAuthentication
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if v, ok := data.(*User); ok && v.UserName == "admin" {
+			if v, ok := data.(*User); ok && v.Username == "admin" {
 				return true
 			}
 
@@ -111,6 +120,7 @@ func main() {
 	r.GET("/health", hs.Health)
 	// Login
 	r.POST("/login", authMiddleware.LoginHandler)
+	r.POST("/register", hs.RegisterUser)
 	// No route
 	r.NoRoute(authMiddleware.MiddlewareFunc(), func(c *gin.Context) {
 		claims := jwt.ExtractClaims(c)
