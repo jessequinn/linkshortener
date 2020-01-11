@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	ss "github.com/catinello/base62"
 )
 
 // ShortenedURLResource holds information about URLs
@@ -41,16 +43,22 @@ func CreateShortUrl(c *gin.Context) {
 	db := c.MustGet("DB").(*sqlx.DB)
 	if err := c.BindJSON(&shortenedURL); err == nil {
 		tx := db.MustBegin()
-		// TODO: add logic for the creation of shorturl
-		result, err := tx.NamedExec("INSERT INTO url (url, shorturl) VALUES (:url, :shorturl)", &ShortenedURLResource{URL: shortenedURL.URL, ShortURL: shortenedURL.URL})
+		result := tx.MustExec("INSERT INTO url (url) VALUES ($1)", shortenedURL.URL)
 		err = tx.Commit()
 		if err == nil {
 			newID, _ := result.LastInsertId()
-			shortenedURL.ID = int(newID)
-			shortenedURL.ShortURL = shortenedURL.URL
-			c.JSON(http.StatusOK, gin.H{
-				"shortUrl": shortenedURL.ShortURL,
-			})
+			shortenedURL.ShortURL = ss.Encode(int(newID))
+			tx := db.MustBegin()
+			tx.MustExec("UPDATE url SET short_url=$1 WHERE id=$2", shortenedURL.ShortURL, int(newID))
+			err = tx.Commit()
+			if err != nil {
+				log.Println(err)
+				c.String(http.StatusInternalServerError, err.Error())
+			} else {
+				c.JSON(http.StatusOK, gin.H{
+					"shortUrl": shortenedURL.ShortURL,
+				})
+			}
 		} else {
 			c.String(http.StatusInternalServerError, err.Error())
 		}
