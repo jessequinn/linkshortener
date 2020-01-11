@@ -13,18 +13,18 @@ import (
 
 // ShortenedURLResource holds information about URLs
 type ShortenedURLResource struct {
-	ID        int       `json:"id"`
-	URL       string    `json:"url"`
-	ShortURL  string    `json:"short_url"`
-	CreatedAt time.Time `json:"created_at"`
+	ID        int       `json:"id" db:"id"`
+	URL       string    `json:"url" db:"url"`
+	ShortURL  string    `json:"short_url" db:"short_url"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 // GetShortUrl returns the url detail
 func GetShortUrl(c *gin.Context) {
 	var shortenedURL ShortenedURLResource
-	id := c.Param("url_id")
+	shortUrl := c.Param("short_url")
 	db := c.MustGet("DB").(*sqlx.DB)
-	err := db.Get(&shortenedURL, "SELECT * FROM url WHERE id=$1", id)
+	err := db.Get(&shortenedURL, "SELECT * FROM url WHERE short_url=$1", shortUrl)
 	if err != nil {
 		log.Println(err)
 		c.JSON(500, gin.H{
