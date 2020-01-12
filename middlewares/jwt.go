@@ -51,7 +51,7 @@ func JwtConfigGenerate() *jwt.GinJWTMiddleware {
 			user.Username = loginVals.Username
 			user.Password = loginVals.Password // TODO: use bcrypt/argon2i
 			db := c.MustGet("DB").(*sqlx.DB)
-			rows, err := db.NamedQuery(`SELECT * FROM user WHERE username=:username AND password=:password`, user)
+			rows, err := db.NamedQuery(`SELECT * FROM appuser WHERE username=:username AND password=:password`, user)
 			defer rows.Close()
 			if err != nil {
 				return nil, jwt.ErrFailedAuthentication // TODO: change to proper error
@@ -87,7 +87,7 @@ func JwtConfigGenerate() *jwt.GinJWTMiddleware {
 			user := c.MustGet("user")
 			db := c.MustGet("DB").(*sqlx.DB)
 			tx := db.MustBegin()
-			tx.MustExec("UPDATE user SET token=$1, updated_at=$2 WHERE username=$3", token, time.Now().UTC().Format("2006-01-02 15:04:05"), user)
+			tx.MustExec("UPDATE appuser SET token=$1, updated_at=$2 WHERE username=$3", token, time.Now().UTC().Format("2006-01-02 15:04:05"), user)
 			err := tx.Commit()
 			if err != nil {
 				c.String(http.StatusInternalServerError, err.Error())

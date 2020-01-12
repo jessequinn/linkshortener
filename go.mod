@@ -11,6 +11,7 @@ require (
 	github.com/jessequinn/base62 v0.0.0-20160227101727-57b93d06afa0
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/kr/pretty v0.2.0 // indirect
+	github.com/lib/pq v1.0.0
 	github.com/mattn/go-sqlite3 v2.0.2+incompatible
 	google.golang.org/appengine v1.6.5 // indirect
 )

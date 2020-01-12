@@ -4,11 +4,10 @@ import (
 	"github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
-	//"time"
 
 	hs "github.com/jessequinn/linkshortener/handlers"
 	mw "github.com/jessequinn/linkshortener/middlewares"
@@ -17,12 +16,12 @@ import (
 
 // Database middlewares
 func Database(con string) gin.HandlerFunc {
-	db, err := sqlx.Connect("sqlite3", con) // temporarily use sqlite3
+	db, err := sqlx.Connect("postgres", con)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	db.MustExec(mdl.UrlSchema)
 	db.MustExec(mdl.UserSchema)
+	db.MustExec(mdl.UrlSchema)
 	return func(c *gin.Context) {
 		c.Set("DB", db)
 		c.Next()
@@ -39,7 +38,7 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	r.Use(Database("./linkshortener.db"))
+	r.Use(Database("user=postgres password=Ceihohch8ait5 dbname=postgres sslmode=disable")) // TODO: use environmental variables - may be
 	authMiddleware, err := jwt.New(mw.JwtConfigGenerate())
 	if err != nil {
 		log.Fatal("JWT Error:" + err.Error())
