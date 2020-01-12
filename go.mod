@@ -13,5 +13,7 @@ require (
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/lib/pq v1.0.0
 	github.com/mattn/go-sqlite3 v2.0.2+incompatible
+	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
+	golang.org/x/tools v0.0.0-20200110213125-a7a6caa82ab2 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 )

@@ -9,6 +9,7 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 )
 
+// User - represents user information required
 type User struct {
 	Username string `json:"username" db:"username"`
 	Password string `json:"password" db:"password"`
@@ -21,6 +22,7 @@ type login struct {
 
 var identityKey = "id"
 
+// JwtConfigGenerate -
 func JwtConfigGenerate() *jwt.GinJWTMiddleware {
 	authMiddleware := &jwt.GinJWTMiddleware{
 		Realm:       "test zone",
@@ -68,7 +70,7 @@ func JwtConfigGenerate() *jwt.GinJWTMiddleware {
 			}
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if v, ok := data.(*User); ok && v.Username == "admin" {
+			if _, ok := data.(*User); ok {
 				return true
 			}
 
