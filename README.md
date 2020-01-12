@@ -5,7 +5,7 @@ On linux set your host to the following:
 
 typically `/etc/hosts`. After run `docker-compose up --build --remove-orphans`.
 
-The following occurs: 
+The following occurs:
    1) nginx-proxy is loaded and creates `VIRTUAL_HOST`s based on the environmental variables found and this occurs automatically 
    2) The linkshortener app loads with the`VIRTUAL_HOST` of `lin.ks`
    3) postgres is accessed and several tables are initialized
@@ -15,7 +15,6 @@ The following occurs:
 The endpoints can be found [here](https://documenter.getpostman.com/view/9113626/SWLiZ66m?version=latest)
 
 ### Development Dependencies
-
 ```bash
 # turn off modules
 $ GO111MODULE=off
@@ -25,7 +24,11 @@ $ GO111MODULE=on
 ```
 
 ### Development
-
 ```bash
 $ ./scripts/dev-run.sh
 ```
+
+### IMPORTANT
+To be included: 
+   1) tests
+   2) monitor of link usage, 
