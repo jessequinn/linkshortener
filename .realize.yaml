@@ -21,10 +21,10 @@ schema:
         commands:
             install:
                 status: true
-                method: go build -o build/linkshortener
+                method: go build -o build/main
             run:
                 status: true
-                method: build/linkshortener
+                method: build/main
         watcher:
             extensions:
                 - go

@@ -1,3 +1,16 @@
+## Install
+On linux set your host to the following:
+
+    127.0.0.1 localhost lin.ks # http only
+
+typically `/etc/hosts`. After run `docker-compose up --build --remove-orphans`.
+
+The following occurs: 
+   1) nginx-proxy is loaded and creates `VIRTUAL_HOST`s based on the environmental variables found and this occurs automatically 
+   2) The linkshortener app loads with the`VIRTUAL_HOST` of `lin.ks`
+
+### Available Endpoints
+
 Endpoints
 
 ```bash
@@ -26,7 +39,7 @@ $ curl -X POST \
 
 ```
 
-Development Dependencies
+### Development Dependencies
 
 ```bash
 # turn off modules
@@ -37,7 +50,7 @@ $ GO111MODULE=on
 ```
 
 
-Development
+### Development
 
 ```bash
 $ ./scripts/dev-run.sh
