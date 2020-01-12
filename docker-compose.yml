@@ -1,0 +1,68 @@
+version: '3.7'
+
+services:
+    postgres:
+        image: postgres:12.1
+        environment:
+            POSTGRES_PASSWORD: "Ceihohch8ait5"
+        ports:
+            - 5432:5432
+#        volumes:
+#            - ./docker/postgress/data:/var/lib/postgresql/data
+        restart: unless-stopped
+    
+    # Link shortener app - Golang
+    linkshortener:
+        build:
+            dockerfile: Dockerfile
+            context: .
+        container_name: linkshortener_app
+        restart: unless-stopped
+        ports:
+            - 8000:8000
+        expose:
+            - 8000
+        depends_on:
+            - nginx-proxy
+            - postgres
+        environment:
+            - VIRTUAL_HOST=lin.ks
+            - VIRTUAL_PORT=8000
+            - DB_HOST=postgres
+            - DB_NAME=postgres
+            - DB_USER=postgres
+            - DB_PASSWORD=Ceihohch8ait5
+            - DB_PORT=5432
+#            - LETSENCRYPT_HOST=lin.ks
+    # Proxy server
+    nginx-proxy:
+        restart: unless-stopped
+        image: jwilder/nginx-proxy
+        ports:
+            - 80:80
+            - 443:443
+        security_opt:
+            - label:type:docker_t
+        volumes:
+            - ./docker/public:/usr/share/nginx/html
+            - ./docker/certs:/etc/nginx/certs:ro
+            - vhost:/etc/nginx/vhost.d
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+        labels:
+            com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+    # To use we need an actual url
+#    letsencrypt-nginx-proxy-companion:
+#        restart: always
+#        image: jrcs/letsencrypt-nginx-proxy-companion:latest
+#        depends_on:
+#            - nginx-proxy
+#        environment:
+#            - NGINX_PROXY_CONTAINER=nginx-proxy
+#            - DEFAULT_EMAIL=me@jessequinn.info
+#        volumes:
+#            - ./docker/certs:/etc/nginx/certs:rw
+#            - /var/run/docker.sock:/var/run/docker.sock:ro
+#            - vhost:/etc/nginx/vhost.d
+#            - ./docker/public:/usr/share/nginx/html
+volumes:
+    vhost:
