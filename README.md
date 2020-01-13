@@ -1,3 +1,15 @@
+# Concept - Design and Implementation Plan
+
+![Prototype](prototype.png)
+
+![Overall Design](overall_design.png)
+
+![Auth Service](auth_service.png)
+
+![Link Registry](link_registry.png)
+
+![Link Reporting](link_reporting.png)
+
 ## Install
 On linux set your host to the following:
 
