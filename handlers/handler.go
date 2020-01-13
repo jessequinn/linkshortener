@@ -116,7 +116,7 @@ func CreateShortURL(c *gin.Context) {
 					} else {
 						c.JSON(http.StatusOK, gin.H{
 							"code":     http.StatusOK,
-							"shortURL": shortenedURLResource.ShortURL,
+							"shortURL": "http://lin.ks/" + shortenedURLResource.ShortURL, // TODO: use variable for url base path
 						})
 					}
 				} else {
@@ -131,7 +131,7 @@ func CreateShortURL(c *gin.Context) {
 				} else {
 					c.JSON(http.StatusOK, gin.H{
 						"code":     http.StatusOK,
-						"shortURL": shortenedURLResource2.ShortURL,
+						"shortURL": "http://lin.ks/" + shortenedURLResource2.ShortURL, // TODO: use variable for url base path
 					})
 				}
 			}
@@ -276,7 +276,7 @@ func UpdateShortURL(c *gin.Context) {
 				c.JSON(http.StatusOK, gin.H{
 					"code":     http.StatusOK,
 					"message":  "The URL already has a short version.",
-					"shortURL": shortenedURLResource2.ShortURL,
+					"shortURL": "http://lin.ks/" + shortenedURLResource2.ShortURL, // TODO: use variable for url base path
 				})
 			}
 		} else {
